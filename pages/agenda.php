@@ -10,6 +10,13 @@ include "../controllers/database.php";
 
 $username = $_SESSION['user'];
 
+// Mengatur jumlah data per halaman
+$limit = 5;
+
+// Mengambil halaman saat ini dari parameter URL, default adalah halaman 1
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$start = ($page - 1) * $limit;
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['edit_id']) && !empty($_POST['edit_id'])) {
         // Edit existing agenda
@@ -58,6 +65,9 @@ if ($result_count->num_rows > 0) {
     $total_agendas = $row_count['total'];
 }
 
+// Menghitung total halaman
+$total_pages = ceil($total_agendas / $limit);
+
 // Query untuk mendapatkan public_url
 $sql_user = "SELECT public_url FROM users WHERE username='$username'";
 $result_user = $conn->query($sql_user);
@@ -69,8 +79,8 @@ if ($result_user->num_rows > 0) {
     exit();
 }
 
-// Query untuk mengambil 5 agenda terbaru
-$sql_agendas = "SELECT * FROM agendas WHERE username='$username' ORDER BY id DESC LIMIT 5";
+// Query untuk mengambil agenda dengan paginasi
+$sql_agendas = "SELECT * FROM agendas WHERE username='$username' ORDER BY id DESC LIMIT $start, $limit";
 $result_agendas = $conn->query($sql_agendas);
 ?>
 
@@ -124,7 +134,7 @@ $result_agendas = $conn->query($sql_agendas);
         <aside class="sidebar p-4">
             <ul class="space-y-4">
                 <li>
-                    <a href="#" class="flex items-center space-x-3 text-gray-300 hover:text-white transition duration-300">
+                    <a href="./dashboard.php" class="flex items-center space-x-3 text-gray-300 hover:text-white transition duration-300">
                         <span class="text-lg font-semibold">💻 Dashboard</span>
                     </a>
                 </li>
@@ -142,31 +152,9 @@ $result_agendas = $conn->query($sql_agendas);
         </aside>
         <!-- Main Dashboard Content -->
         <div class="main-content">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-3xl font-extrabold text-white">Welcome to Your Dashboard</h2>
-            </div>
-            <!-- Section Statistik -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
-                    <h3 class="text-xl font-bold text-white mb-2">Total Agendas</h3>
-                    <p class="text-3xl font-extrabold text-blue-500"><?php echo $total_agendas; ?></p>
-                </div>
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
-                    <h3 class="text-xl font-bold text-white mb-2">Completed [Soon]</h3>
-                    <p class="text-3xl font-extrabold text-green-500">0</p>
-                </div>
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
-                    <h3 class="text-xl font-bold text-white mb-2">Upcoming [Soon]</h3>
-                    <p class="text-3xl font-extrabold text-yellow-500">0</p>
-                </div>
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
-                    <h3 class="text-xl font-bold text-white mb-2">Pending [Soon]</h3>
-                    <p class="text-3xl font-extrabold text-red-500">0</p>
-                </div>
-            </div>
             <!-- Section Agenda Terbaru -->
             <div class="bg-gray-800 shadow-lg rounded-lg p-6 mb-8 transition-transform duration-300">
-                <h3 class="text-2xl font-bold text-white mb-4">Recent Agenda</h3>
+                <h3 class="text-2xl font-bold text-white mb-4">List Agenda</h3>
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
                         <thead>
@@ -185,7 +173,7 @@ $result_agendas = $conn->query($sql_agendas);
                             // Ambil data dari database
                             if ($result_agendas->num_rows > 0) {
                                 // Output data dari setiap baris
-                                $no = 1;
+                                $no = $start + 1;
                                 while($row = $result_agendas->fetch_assoc()) {
                                     echo "<tr class='hover:bg-gray-600 transition duration-300'>";
                                     echo "<td class='py-4 px-6 text-center'>" . $no . "</td>";
@@ -207,6 +195,18 @@ $result_agendas = $conn->query($sql_agendas);
                             ?>
                         </tbody>
                     </table>
+                </div>
+                <!-- Pagination Links -->
+                <div class="mt-4">
+                    <nav class="block">
+                        <ul class="flex pl-0 rounded list-none flex-wrap">
+                            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                <li>
+                                    <a href="?page=<?php echo $i; ?>" class="first:ml-0 text-xs font-semibold flex w-10 h-10 mx-1 items-center justify-center leading-tight text-gray-300 bg-gray-700 rounded-full hover:bg-gray-600 <?php if ($i == $page) echo 'bg-blue-500'; ?>"><?php echo $i; ?></a>
+                                </li>
+                            <?php endfor; ?>
+                        </ul>
+                    </nav>
                 </div>
             </div>
             <!-- Public URL Section -->
