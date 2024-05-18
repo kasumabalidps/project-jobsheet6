@@ -12,8 +12,28 @@ if ($result_user->num_rows > 0) {
     $row_user = $result_user->fetch_assoc();
     $username = $row_user['username'];
 
-    // Query untuk mendapatkan data agenda berdasarkan username
-    $sql_agendas = "SELECT * FROM agendas WHERE username='$username'";
+    // Mengatur jumlah data per halaman
+    $limit = 5;
+
+    // Mengambil halaman saat ini dari parameter URL, default adalah halaman 1
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $start = ($page - 1) * $limit;
+
+    // Query untuk menghitung jumlah total agenda
+    $sql_count = "SELECT COUNT(*) as total FROM agendas WHERE username='$username'";
+    $result_count = $conn->query($sql_count);
+    $total_agendas = 0;
+
+    if ($result_count->num_rows > 0) {
+        $row_count = $result_count->fetch_assoc();
+        $total_agendas = $row_count['total'];
+    }
+
+    // Menghitung total halaman
+    $total_pages = ceil($total_agendas / $limit);
+
+    // Query untuk mendapatkan data agenda berdasarkan username dengan paginasi
+    $sql_agendas = "SELECT * FROM agendas WHERE username='$username' ORDER BY id DESC LIMIT $start, $limit";
     $result_agendas = $conn->query($sql_agendas);
 } else {
     echo "Invalid URL.";
@@ -96,9 +116,20 @@ if ($result_user->num_rows > 0) {
                     </tbody>
                 </table>
             </div>
+            <!-- Pagination Links -->
+            <div class="mt-4">
+                <nav class="block">
+                    <ul class="flex pl-0 rounded list-none flex-wrap">
+                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                            <li>
+                                <a href="?id=<?php echo $public_url; ?>&page=<?php echo $i; ?>" class="first:ml-0 text-xs font-semibold flex w-10 h-10 mx-1 items-center justify-center leading-tight text-gray-300 bg-gray-700 rounded-full hover:bg-gray-600 <?php if ($i == $page) echo 'bg-blue-500'; ?>"><?php echo $i; ?></a>
+                            </li>
+                        <?php endfor; ?>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </main>
-    
 
     <!-- Footer -->
     <footer class="bg-gray-800 py-4">
