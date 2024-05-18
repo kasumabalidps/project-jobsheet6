@@ -6,7 +6,6 @@
     <title>E-Agenda</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Tambahan CSS untuk teks bergerak */
         .marquee {
             white-space: nowrap;
             overflow: hidden;
@@ -72,7 +71,6 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-700">
-                        <!-- Tambahkan lebih banyak baris di sini -->
                         <tr class="hover:bg-gray-600 transition duration-300">
                             <td class="py-4 px-6 text-center">18 Mei 2024</td>
                             <td class="py-4 px-6 text-center">10:00 AM</td>
@@ -103,7 +101,6 @@
                             <td class="py-4 px-6 text-center">Meeting</td>
                             <td class="py-4 px-6 text-center">Ruang Meeting 2</td>
                         </tr>
-                        <!-- Tambahkan lebih banyak baris di sini -->
                     </tbody>
                 </table>
             </div>
