@@ -1,3 +1,55 @@
+<?php
+session_start();
+require "../controllers/database.php";
+
+if (isset($_SESSION['user'])) {
+    header("Location: dashboard.php");
+    exit();
+}
+
+function sanitizeInput($data) {
+    return htmlspecialchars(stripslashes(trim($data)));
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = sanitizeInput($_POST["username"]);
+    $email = sanitizeInput($_POST["email"]);
+    $password = $_POST["password"];
+    $confirm_password = $_POST["confirm_password"];
+    $terms = isset($_POST["terms"]);
+
+    if ($terms) {
+        if ($password === $confirm_password) {
+            $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+            $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+
+            if ($stmt) {
+                $stmt->bind_param("sss", $username, $email, $hashed_password);
+
+                if ($stmt->execute()) {
+                    $_SESSION['user'] = $username;
+                    setcookie("username", $username, time() + (86400 * 30), "/");
+
+                    header("Location: dashboard.php");
+                    exit();
+                } else {
+                    echo "Error: " . $stmt->error;
+                }
+                $stmt->close();
+            } else {
+                echo "Error: " . $conn->error;
+            }
+        } else {
+            echo "Password dan konfirmasi password tidak sesuai.";
+        }
+    } else {
+        echo "Anda harus menyetujui Syarat dan Ketentuan.";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -102,21 +154,21 @@
                 <h1 class="text-2xl font-bold pb-2 text-white">Buat Akun Baru</h1>
                 <small class="text-gray-400">Silakan masukkan detail Anda untuk mendaftar</small>
             </div>
-            <form>
+            <form action="register.php" method="POST">
                 <div class="mb-3">
-                    <input type="text" placeholder="Nama Pengguna" class="block w-full px-4 py-2 custom-input"/>
+                    <input type="text" name="username" placeholder="Nama Pengguna" class="block w-full px-4 py-2 custom-input" required/>
                 </div>
                 <div class="mb-3">
-                    <input type="email" placeholder="Email" class="block w-full px-4 py-2 custom-input"/>
+                    <input type="email" name="email" placeholder="Email" class="block w-full px-4 py-2 custom-input" required/>
                 </div>
                 <div class="mb-3">
-                    <input type="password" placeholder="Kata Sandi" class="block w-full px-4 py-2 custom-input"/>
+                    <input type="password" name="password" placeholder="Kata Sandi" class="block w-full px-4 py-2 custom-input" required/>
                 </div>
                 <div class="mb-3">
-                    <input type="password" placeholder="Konfirmasi Kata Sandi" class="block w-full px-4 py-2 custom-input"/>
+                    <input type="password" name="confirm_password" placeholder="Konfirmasi Kata Sandi" class="block w-full px-4 py-2 custom-input" required/>
                 </div>
                 <div class="flex items-center mb-3">
-                    <input id="terms" type="checkbox" class="custom-checkbox mr-2" />
+                    <input id="terms" type="checkbox" name="terms" class="custom-checkbox mr-2" required />
                     <label for="terms" class="text-sm font-semibold text-gray-600">Saya setuju dengan Syarat dan Ketentuan</label>
                 </div>
                 <div class="mb-3">

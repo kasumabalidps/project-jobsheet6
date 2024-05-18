@@ -1,16 +1,12 @@
 <?php
-// Koneksi ke database
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "project-kampus";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Cek koneksi
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+session_start();
+if (!isset($_SESSION['user'])) {
+    header("Location: login.php");
+    exit();
 }
+
+// Koneksi ke database
+include "../controllers/database.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $judul = $_POST['judul'];
@@ -76,8 +72,8 @@ if ($result_count->num_rows > 0) {
                 </div>
                 <div class="flex items-center space-x-4">
                     <!-- Mengganti dengan tombol Logout -->
-                    <span class="text-gray-300">Halo Bang, User!</span>
-                    <a href="#" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Logout</a>
+                    <span class="text-gray-300">Halo Bang, <?php echo htmlspecialchars($_SESSION['user']); ?>!</span>
+                    <a href="../controllers/logout.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Logout</a>
                 </div>
             </div>
         </div>

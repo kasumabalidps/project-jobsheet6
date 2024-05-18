@@ -1,3 +1,7 @@
+<?php
+include "../controllers/database.php";
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,16 +53,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-700">
-                        <!-- Data dari database akan ditampilkan di sini -->
                         <?php
-                        // Koneksi ke database
-                        $conn = new mysqli('localhost', 'root', '', 'project-kampus');
-
-                        // Cek koneksi
-                        if ($conn->connect_error) {
-                            die("Connection failed: " . $conn->connect_error);
-                        }
-
                         // Query untuk mengambil semua data dari tabel agendas
                         $sql = "SELECT judul, tanggal, jam, tempat, kegiatan FROM agendas";
                         $result = $conn->query($sql);

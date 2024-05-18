@@ -1,3 +1,61 @@
+<?php
+session_start();
+require '../controllers/database.php';
+
+// Mengecek apakah session sudah ada
+if (isset($_SESSION['user'])) {
+    header("Location: dashboard.php");
+    exit();
+}
+
+function sanitizeInput($data) {
+    return htmlspecialchars(stripslashes(trim($data)));
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = isset($_POST['email']) ? sanitizeInput($_POST['email']) : '';
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
+    $remember = isset($_POST['remember']) ? true : false;
+
+    if ($email && $password) {
+        $sql = "SELECT id, username, password FROM users WHERE email = ?";
+        $stmt = $conn->prepare($sql);
+
+        if ($stmt) {
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $stmt->store_result();
+
+            if ($stmt->num_rows == 1) {
+                $stmt->bind_result($id, $username, $hashed_password);
+                $stmt->fetch();
+
+                if (password_verify($password, $hashed_password)) {
+                    $_SESSION['user'] = $username;
+                    $_SESSION['user_id'] = $id;
+
+                    if ($remember) {
+                        setcookie("username", $username, time() + (86400 * 30), "/");
+                    }
+
+                    header("Location: dashboard.php");
+                    exit();
+                } else {
+                    echo "Password salah.";
+                }
+            } else {
+                echo "Pengguna tidak ditemukan.";
+            }
+            $stmt->close();
+        } else {
+            echo "Error: " . $conn->error;
+        }
+    } else {
+        echo "Email dan password harus diisi.";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -101,15 +159,15 @@
                 <h1 class="text-2xl font-bold pb-2 text-white">Selamat Datang Kembali!!</h1>
                 <small class="text-gray-400 pb-10">Harap Login Terlebih Dahulu</small>
             </div>
-            <form>
+            <form action="login.php" method="POST">
                 <div class="mb-3">
-                    <input type="email" placeholder="Email" class="block w-full px-4 py-2 custom-input"/>
+                    <input type="email" name="email" placeholder="Email" class="block w-full px-4 py-2 custom-input" required/>
                 </div>
                 <div class="mb-3">
-                    <input type="password" placeholder="Kata Sandi" class="block w-full px-4 py-2 custom-input"/>
+                    <input type="password" name="password" placeholder="Kata Sandi" class="block w-full px-4 py-2 custom-input" required/>
                 </div>
                 <div class="flex items-center mb-3">
-                    <input id="remember" type="checkbox" class="custom-checkbox mr-2" />
+                    <input id="remember" name="remember" type="checkbox" class="custom-checkbox mr-2" />
                     <label for="remember" class="text-sm font-semibold text-gray-600">Ingat Saya</label>
                     <a href="#" class="ml-auto text-sm font-semibold text-gray-600">Lupa Kata Sandi?</a>
                 </div>
