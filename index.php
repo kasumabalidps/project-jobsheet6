@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,8 +47,15 @@
                     <h1 class="text-2xl font-bold text-white">E-Agenda</h1>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a target="_blank" href="./pages/login.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Login</a>
-                    <a target="_blank" href="./pages/register.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Register</a>
+                    <?php if (isset($_SESSION['user'])): ?>
+                        <a href="./pages/dashboard.php">
+                        <span class="text-gray-300">Dashboard</span>
+                        </a>
+                        <a href="./pages/logout.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Logout</a>
+                    <?php else: ?>
+                        <a href="./pages/login.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Login</a>
+                        <a href="./pages/register.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Register</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
