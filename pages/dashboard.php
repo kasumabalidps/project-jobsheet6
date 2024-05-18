@@ -51,14 +51,17 @@
             <ul class="space-y-4">
                 <li>
                     <a href="#" class="flex items-center space-x-3 text-gray-300 hover:text-white transition duration-300">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v6h6v6h6v-6h6V7H3z"></path></svg>
-                        <span class="text-lg font-semibold">Dashboard</span>
+                        <span class="text-lg font-semibold">💻 Dashboard</span>
                     </a>
                 </li>
                 <li>
                     <a href="#" class="flex items-center space-x-3 text-gray-300 hover:text-white transition duration-300">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 18.364A3 3 0 0112 15h4a3 3 0 010 6h-4a3 3 0 01-6.879-2.636z"></path></svg>
-                        <span class="text-lg font-semibold">Profile</span>
+                        <span class="text-lg font-semibold">🙆‍♂️ Profile</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center space-x-3 text-gray-300 hover:text-white transition duration-300">
+                        <span class="text-lg font-semibold">🗓️ My Agendas</span>
                     </a>
                 </li>
             </ul>
