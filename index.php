@@ -43,8 +43,8 @@
                     <h1 class="text-2xl font-bold text-white">E-Agenda</h1>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="#" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Login</a>
-                    <a href="#" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Register</a>
+                    <a target="_blank" href="./pages/login.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Login</a>
+                    <a target="_blank" href="./pages/register.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Register</a>
                 </div>
             </div>
         </div>

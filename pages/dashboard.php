@@ -12,6 +12,20 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $judul = $_POST['judul'];
+    $tanggal = $_POST['tanggal'];
+    $jam = $_POST['jam'];
+    $tempat = $_POST['tempat'];
+    $kegiatan = $_POST['kegiatan'];
+
+    $sql = "INSERT INTO agendas (judul, tanggal, jam, tempat, kegiatan) VALUES ('$judul', '$tanggal', '$jam', '$tempat', '$kegiatan')";
+
+    if ($conn->query($sql) === !TRUE) {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+}
+
 // Query untuk menghitung jumlah baris
 $sql_count = "SELECT COUNT(*) as total FROM agendas";
 $result_count = $conn->query($sql_count);

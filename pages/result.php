@@ -41,42 +41,37 @@
                 <table class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
                     <thead>
                         <tr>
+                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Judul</th>
                             <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tanggal</th>
                             <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Waktu</th>
                             <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Kegiatan</th>
                             <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Lokasi</th>
-                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Deskripsi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-700">
                         <!-- Data dari database akan ditampilkan di sini -->
                         <?php
-                        // Contoh kode PHP untuk mengambil data dari database berdasarkan kode unik
-                        $unique_code = $_GET['code'];
                         // Koneksi ke database
-                        $conn = new mysqli('localhost', 'username', 'password', 'database');
+                        $conn = new mysqli('localhost', 'root', '', 'project-kampus');
 
                         // Cek koneksi
                         if ($conn->connect_error) {
                             die("Connection failed: " . $conn->connect_error);
                         }
 
-                        // Query untuk mengambil data berdasarkan kode unik
-                        $sql = "SELECT date, time, activity, location, description FROM agendas WHERE unique_code = ?";
-                        $stmt = $conn->prepare($sql);
-                        $stmt->bind_param("s", $unique_code);
-                        $stmt->execute();
-                        $result = $stmt->get_result();
+                        // Query untuk mengambil semua data dari tabel agendas
+                        $sql = "SELECT judul, tanggal, jam, tempat, kegiatan FROM agendas";
+                        $result = $conn->query($sql);
 
                         // Jika data ditemukan
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
                                 echo "<tr class='hover:bg-gray-600 transition duration-300'>";
-                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['date']) . "</td>";
-                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['time']) . "</td>";
-                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['activity']) . "</td>";
-                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['location']) . "</td>";
-                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['description']) . "</td>";
+                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['judul']) . "</td>";
+                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['tanggal']) . "</td>";
+                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['jam']) . "</td>";
+                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['kegiatan']) . "</td>";
+                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['tempat']) . "</td>";
                                 echo "</tr>";
                             }
                         } else {
@@ -85,7 +80,6 @@
                             echo "</tr>";
                         }
 
-                        $stmt->close();
                         $conn->close();
                         ?>
                     </tbody>
