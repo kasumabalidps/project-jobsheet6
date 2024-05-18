@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Daftar</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         .form-container {
@@ -73,38 +73,38 @@
     <div class="flex w-full max-w-4xl shadow-md">
         <div class="flex flex-col justify-center bg-white rounded-l-md form-container form">
             <div class="text-center">
-                <h1 class="text-2xl font-bold pb-2">Create an Account</h1>
-                <small class="text-gray-400 pb-10">Please enter your details to register</small>
+                <h1 class="text-2xl font-bold pb-2">Buat Akun Baru</h1>
+                <small class="text-gray-400 pb-10">Silakan masukkan detail Anda untuk mendaftar</small>
             </div>
             <form>
                 <div class="mb-3">
-                    <input type="text" placeholder="Username" class="block w-full px-4 py-2 text-gray-500 border border-gray-300 custom-input"/>
+                    <input type="text" placeholder="Nama Pengguna" class="block w-full px-4 py-2 text-gray-500 border border-gray-300 custom-input"/>
                 </div>
                 <div class="mb-3">
                     <input type="email" placeholder="Email" class="block w-full px-4 py-2 text-gray-500 border border-gray-300 custom-input"/>
                 </div>
                 <div class="mb-3">
-                    <input type="password" placeholder="Password" class="block w-full px-4 py-2 text-gray-500 border border-gray-300 custom-input"/>
+                    <input type="password" placeholder="Kata Sandi" class="block w-full px-4 py-2 text-gray-500 border border-gray-300 custom-input"/>
                 </div>
                 <div class="mb-3">
-                    <input type="password" placeholder="Confirm Password" class="block w-full px-4 py-2 text-gray-500 border border-gray-300 custom-input"/>
+                    <input type="password" placeholder="Konfirmasi Kata Sandi" class="block w-full px-4 py-2 text-gray-500 border border-gray-300 custom-input"/>
                 </div>
                 <div class="flex items-center mb-3">
                     <input id="terms" type="checkbox" class="custom-checkbox mr-2" />
-                    <label for="terms" class="text-sm font-semibold text-gray-600">I agree to the Terms and Conditions</label>
+                    <label for="terms" class="text-sm font-semibold text-gray-600">Saya setuju dengan Syarat dan Ketentuan</label>
                 </div>
                 <div class="mb-3">
-                    <button type="submit" class="block w-full px-4 py-2 text-center text-white bg-black custom-button hover:bg-gray-800">Sign Up</button>
+                    <button type="submit" class="block w-full px-4 py-2 text-center text-white bg-black custom-button hover:bg-gray-800">Daftar</button>
                 </div>
                 <div class="text-center">
-                    <span class="text-sm font-semibold text-gray-400">Already have an account?</span>
-                    <a href="login.php" class="text-sm font-semibold text-gray-600">Sign In</a>
+                    <span class="text-sm font-semibold text-gray-400">Sudah punya akun?</span>
+                    <a href="login.php" class="text-sm font-semibold text-gray-600">Masuk</a>
                 </div>
             </form>
             <div class="mb-3">
                 <button type="button" class="flex items-center justify-center w-full px-4 py-2 border border-gray-300 custom-button hover:border-gray-500">
                     <img class="w-5 mr-2" src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="Google logo">
-                    Sign Up with Google
+                    Daftar dengan Google
                 </button>
             </div>
         </div>
