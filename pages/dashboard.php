@@ -110,26 +110,26 @@ if ($result_count->num_rows > 0) {
 
             <!-- Section Statistik -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
                     <h3 class="text-xl font-bold text-white mb-2">Total Agendas</h3>
                     <p class="text-3xl font-extrabold text-blue-500"><?php echo $total_agendas; ?></p>
                 </div>
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
                     <h3 class="text-xl font-bold text-white mb-2">Completed [Soon]</h3>
                     <p class="text-3xl font-extrabold text-green-500">0</p>
                 </div>
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
                     <h3 class="text-xl font-bold text-white mb-2">Upcoming [Soon]</h3>
                     <p class="text-3xl font-extrabold text-yellow-500">0</p>
                 </div>
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
                     <h3 class="text-xl font-bold text-white mb-2">Pending [Soon]</h3>
                     <p class="text-3xl font-extrabold text-red-500">0</p>
                 </div>
             </div>
 
             <!-- Section Agenda Terbaru -->
-            <div class="bg-gray-800 shadow-lg rounded-lg p-6 mb-8 transition-transform duration-300 transform hover:scale-105">
+            <div class="bg-gray-800 shadow-lg rounded-lg p-6 mb-8 transition-transform duration-300">
     <h3 class="text-2xl font-bold text-white mb-4">Recent Agendas</h3>
     <div class="overflow-x-auto">
         <table class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
@@ -173,7 +173,7 @@ if ($result_count->num_rows > 0) {
 </div>
 
             <!-- Formulir untuk membuat agenda baru -->
-            <div class="bg-gray-800 shadow-lg rounded-lg p-6 transition-transform duration-300 transform hover:scale-105">
+            <div class="bg-gray-800 shadow-lg rounded-lg p-6 transition-transform duration-300">
                 <h3 class="text-2xl font-bold text-white mb-4">Buat Agenda Baru</h3>
                 <form method="POST" action="">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
