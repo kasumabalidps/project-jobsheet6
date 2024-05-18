@@ -8,6 +8,8 @@ if (!isset($_SESSION['user'])) {
 // Koneksi ke database
 include "../controllers/database.php";
 
+$username = $_SESSION['user'];
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $judul = $_POST['judul'];
     $tanggal = $_POST['tanggal'];
@@ -15,21 +17,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tempat = $_POST['tempat'];
     $kegiatan = $_POST['kegiatan'];
 
-    $sql = "INSERT INTO agendas (judul, tanggal, jam, tempat, kegiatan) VALUES ('$judul', '$tanggal', '$jam', '$tempat', '$kegiatan')";
+    $sql = "INSERT INTO agendas (username, judul, tanggal, jam, tempat, kegiatan) VALUES ('$username', '$judul', '$tanggal', '$jam', '$tempat', '$kegiatan')";
 
-    if ($conn->query($sql) === !TRUE) {
+    if ($conn->query($sql) !== TRUE) {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
 
 // Query untuk menghitung jumlah baris
-$sql_count = "SELECT COUNT(*) as total FROM agendas";
+$sql_count = "SELECT COUNT(*) as total FROM agendas WHERE username='$username'";
 $result_count = $conn->query($sql_count);
 $total_agendas = 0;
 
 if ($result_count->num_rows > 0) {
     $row_count = $result_count->fetch_assoc();
     $total_agendas = $row_count['total'];
+}
+
+// Query untuk mendapatkan public_url
+$sql_user = "SELECT public_url FROM users WHERE username='$username'";
+$result_user = $conn->query($sql_user);
+if ($result_user->num_rows > 0) {
+    $row_user = $result_user->fetch_assoc();
+    $public_url = $row_user['public_url'];
+} else {
+    echo "User not found.";
+    exit();
 }
 ?>
 
@@ -71,7 +84,6 @@ if ($result_count->num_rows > 0) {
                     <h1 class="text-2xl font-bold text-white">E-Agenda</h1>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <!-- Mengganti dengan tombol Logout -->
                     <span class="text-gray-300">Halo Bang, <?php echo htmlspecialchars($_SESSION['user']); ?>!</span>
                     <a href="../controllers/logout.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Logout</a>
                 </div>
@@ -130,50 +142,55 @@ if ($result_count->num_rows > 0) {
 
             <!-- Section Agenda Terbaru -->
             <div class="bg-gray-800 shadow-lg rounded-lg p-6 mb-8 transition-transform duration-300">
-    <h3 class="text-2xl font-bold text-white mb-4">Recent Agendas</h3>
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
-            <thead>
-                <tr>
-                    <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">No</th>
-                    <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Judul</th>
-                    <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tanggal</th>
-                    <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Jam</th>
-                    <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tempat</th>
-                    <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Kegiatan</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-700">
-                <?php
-                // Ambil data dari database
-                $sql = "SELECT * FROM agendas";
-                $result = $conn->query($sql);
+                <h3 class="text-2xl font-bold text-white mb-4">Recent Agendas</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
+                        <thead>
+                            <tr>
+                                <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">No</th>
+                                <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Judul</th>
+                                <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tanggal</th>
+                                <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Jam</th>
+                                <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tempat</th>
+                                <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Kegiatan</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700">
+                            <?php
+                            // Ambil data dari database
+                            $sql = "SELECT * FROM agendas WHERE username='$username'";
+                            $result = $conn->query($sql);
 
-                if ($result->num_rows > 0) {
-                    // Output data dari setiap baris
-                    $no = 1;
-                    while($row = $result->fetch_assoc()) {
-                        echo "<tr class='hover:bg-gray-600 transition duration-300'>";
-                        echo "<td class='py-4 px-6 text-center'>" . $no . "</td>";
-                        echo "<td class='py-4 px-6 text-center'>" . $row['judul'] . "</td>";
-                        echo "<td class='py-4 px-6 text-center'>" . $row['tanggal'] . "</td>";
-                        echo "<td class='py-4 px-6 text-center'>" . $row['jam'] . "</td>";
-                        echo "<td class='py-4 px-6 text-center'>" . $row['tempat'] . "</td>";
-                        echo "<td class='py-4 px-6 text-center'>" . $row['kegiatan'] . "</td>";
-                        echo "</tr>";
-                        $no++;
-                    }
-                } else {
-                    echo "<tr><td colspan='6' class='py-4 px-6 text-center'>No data available</td></tr>";
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
-</div>
+                            if ($result->num_rows > 0) {
+                                // Output data dari setiap baris
+                                $no = 1;
+                                while($row = $result->fetch_assoc()) {
+                                    echo "<tr class='hover:bg-gray-600 transition duration-300'>";
+                                    echo "<td class='py-4 px-6 text-center'>" . $no . "</td>";
+                                    echo "<td class='py-4 px-6 text-center'>" . $row['judul'] . "</td>";
+                                    echo "<td class='py-4 px-6 text-center'>" . $row['tanggal'] . "</td>";
+                                    echo "<td class='py-4 px-6 text-center'>" . $row['jam'] . "</td>";
+                                    echo "<td class='py-4 px-6 text-center'>" . $row['tempat'] . "</td>";
+                                    echo "<td class='py-4 px-6 text-center'>" . $row['kegiatan'] . "</td>";
+                                    echo "</tr>";
+                                    $no++;
+                                }
+                            } else {
+                                echo "<tr><td colspan='6' class='py-4 px-6 text-center'>No data available</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-            <!-- Formulir untuk membuat agenda baru -->
+            <!-- Public URL Section -->
             <div class="bg-gray-800 shadow-lg rounded-lg p-6 transition-transform duration-300">
+                <h3 class="text-2xl font-bold text-white mb-4">Public URL</h3>
+                <p class="text-blue-500 hover:underline"><a href="result.php?id=<?php echo $public_url; ?>" target="_blank">result.php?id=<?php echo $public_url; ?></a></p>
+            </div>
+
+            <div class="bg-gray-800 shadow-lg rounded-lg p-6 transition-transform duration-300 mt-10">
                 <h3 class="text-2xl font-bold text-white mb-4">Buat Agenda Baru</h3>
                 <form method="POST" action="">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -203,6 +220,10 @@ if ($result_count->num_rows > 0) {
                     </div>
                 </form>
             </div>
+        </div>
+
+                           <!-- Formulir untuk membuat agenda baru -->
+
         </div>
     </main>
 

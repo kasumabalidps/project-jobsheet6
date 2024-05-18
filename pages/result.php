@@ -1,5 +1,24 @@
 <?php
 include "../controllers/database.php";
+
+// Mendapatkan nilai public_url dari URL
+$public_url = $_GET['id'];
+
+// Query untuk mendapatkan username berdasarkan public_url
+$sql_user = "SELECT username FROM users WHERE public_url='$public_url'";
+$result_user = $conn->query($sql_user);
+
+if ($result_user->num_rows > 0) {
+    $row_user = $result_user->fetch_assoc();
+    $username = $row_user['username'];
+
+    // Query untuk mendapatkan data agenda berdasarkan username
+    $sql_agendas = "SELECT * FROM agendas WHERE username='$username'";
+    $result_agendas = $conn->query($sql_agendas);
+} else {
+    echo "Invalid URL.";
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -47,26 +66,21 @@ include "../controllers/database.php";
                         <tr>
                             <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Judul</th>
                             <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tanggal</th>
-                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Waktu</th>
+                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Jam</th>
+                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tempat</th>
                             <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Kegiatan</th>
-                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Lokasi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-700">
                         <?php
-                        // Query untuk mengambil semua data dari tabel agendas
-                        $sql = "SELECT judul, tanggal, jam, tempat, kegiatan FROM agendas";
-                        $result = $conn->query($sql);
-
-                        // Jika data ditemukan
-                        if ($result->num_rows > 0) {
-                            while ($row = $result->fetch_assoc()) {
+                        if ($result_agendas->num_rows > 0) {
+                            while ($row = $result_agendas->fetch_assoc()) {
                                 echo "<tr class='hover:bg-gray-600 transition duration-300'>";
                                 echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['judul']) . "</td>";
                                 echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['tanggal']) . "</td>";
                                 echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['jam']) . "</td>";
-                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['kegiatan']) . "</td>";
                                 echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['tempat']) . "</td>";
+                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['kegiatan']) . "</td>";
                                 echo "</tr>";
                             }
                         } else {
@@ -82,6 +96,7 @@ include "../controllers/database.php";
             </div>
         </div>
     </main>
+    
 
     <!-- Footer -->
     <footer class="bg-gray-800 py-4">
