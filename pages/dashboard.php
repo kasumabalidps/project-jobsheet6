@@ -1,3 +1,28 @@
+<?php
+// Koneksi ke database
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "project-kampus";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Cek koneksi
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Query untuk menghitung jumlah baris
+$sql_count = "SELECT COUNT(*) as total FROM agendas";
+$result_count = $conn->query($sql_count);
+$total_agendas = 0;
+
+if ($result_count->num_rows > 0) {
+    $row_count = $result_count->fetch_assoc();
+    $total_agendas = $row_count['total'];
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -77,60 +102,70 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
                 <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
                     <h3 class="text-xl font-bold text-white mb-2">Total Agendas</h3>
-                    <p class="text-3xl font-extrabold text-blue-500">10</p>
+                    <p class="text-3xl font-extrabold text-blue-500"><?php echo $total_agendas; ?></p>
                 </div>
                 <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                    <h3 class="text-xl font-bold text-white mb-2">Completed</h3>
-                    <p class="text-3xl font-extrabold text-green-500">5</p>
+                    <h3 class="text-xl font-bold text-white mb-2">Completed [Soon]</h3>
+                    <p class="text-3xl font-extrabold text-green-500">0</p>
                 </div>
                 <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                    <h3 class="text-xl font-bold text-white mb-2">Upcoming</h3>
-                    <p class="text-3xl font-extrabold text-yellow-500">3</p>
+                    <h3 class="text-xl font-bold text-white mb-2">Upcoming [Soon]</h3>
+                    <p class="text-3xl font-extrabold text-yellow-500">0</p>
                 </div>
                 <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                    <h3 class="text-xl font-bold text-white mb-2">Pending</h3>
-                    <p class="text-3xl font-extrabold text-red-500">2</p>
+                    <h3 class="text-xl font-bold text-white mb-2">Pending [Soon]</h3>
+                    <p class="text-3xl font-extrabold text-red-500">0</p>
                 </div>
             </div>
 
             <!-- Section Agenda Terbaru -->
             <div class="bg-gray-800 shadow-lg rounded-lg p-6 mb-8 transition-transform duration-300 transform hover:scale-105">
-                <h3 class="text-2xl font-bold text-white mb-4">Recent Agendas</h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
-                        <thead>
-                            <tr>
-                                <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">No</th>
-                                <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tanggal</th>
-                                <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Jam</th>
-                                <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tempat</th>
-                                <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Kegiatan</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-700">
-                            <tr class="hover:bg-gray-600 transition duration-300">
-                                <td class="py-4 px-6 text-center">1</td>
-                                <td class="py-4 px-6 text-center">18 Mei 2024</td>
-                                <td class="py-4 px-6 text-center">10:00 AM</td>
-                                <td class="py-4 px-6 text-center">Ruang Rapat 1</td>
-                                <td class="py-4 px-6 text-center">Rapat Proyek</td>
-                            </tr>
-                            <tr class="hover:bg-gray-600 transition duration-300">
-                                <td class="py-4 px-6 text-center">2</td>
-                                <td class="py-4 px-6 text-center">19 Mei 2024</td>
-                                <td class="py-4 px-6 text-center">1:00 PM</td>
-                                <td class="py-4 px-6 text-center">Ruang Konferensi</td>
-                                <td class="py-4 px-6 text-center">Presentasi Klien</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    <h3 class="text-2xl font-bold text-white mb-4">Recent Agendas</h3>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
+            <thead>
+                <tr>
+                    <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">No</th>
+                    <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Judul</th>
+                    <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tanggal</th>
+                    <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Jam</th>
+                    <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tempat</th>
+                    <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Kegiatan</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-700">
+                <?php
+                // Ambil data dari database
+                $sql = "SELECT * FROM agendas";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    // Output data dari setiap baris
+                    $no = 1;
+                    while($row = $result->fetch_assoc()) {
+                        echo "<tr class='hover:bg-gray-600 transition duration-300'>";
+                        echo "<td class='py-4 px-6 text-center'>" . $no . "</td>";
+                        echo "<td class='py-4 px-6 text-center'>" . $row['judul'] . "</td>";
+                        echo "<td class='py-4 px-6 text-center'>" . $row['tanggal'] . "</td>";
+                        echo "<td class='py-4 px-6 text-center'>" . $row['jam'] . "</td>";
+                        echo "<td class='py-4 px-6 text-center'>" . $row['tempat'] . "</td>";
+                        echo "<td class='py-4 px-6 text-center'>" . $row['kegiatan'] . "</td>";
+                        echo "</tr>";
+                        $no++;
+                    }
+                } else {
+                    echo "<tr><td colspan='6' class='py-4 px-6 text-center'>No data available</td></tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+</div>
 
             <!-- Formulir untuk membuat agenda baru -->
             <div class="bg-gray-800 shadow-lg rounded-lg p-6 transition-transform duration-300 transform hover:scale-105">
                 <h3 class="text-2xl font-bold text-white mb-4">Buat Agenda Baru</h3>
-                <form>
+                <form method="POST" action="">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
                             <label for="judul" class="block text-sm font-medium text-gray-300">Judul</label>
@@ -151,7 +186,7 @@
                     </div>
                     <div>
                         <label for="kegiatan" class="block text-sm font-medium text-gray-300">Kegiatan</label>
-                        <textarea id="kegiatan" name="kegiata" rows="4" class="mt-1 p-2 bg-gray-700 text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-600"></textarea>
+                        <textarea id="kegiatan" name="kegiatan" rows="4" class="mt-1 p-2 bg-gray-700 text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-600"></textarea>
                     </div>
                     <div class="mt-6">
                         <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-full font-bold shadow-md hover:bg-blue-700 transition duration-300">Save</button>
