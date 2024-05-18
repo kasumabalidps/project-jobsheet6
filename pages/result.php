@@ -1,5 +1,44 @@
 <?php
 include "../controllers/database.php";
+
+// Mendapatkan nilai public_url dari URL
+$public_url = $_GET['id'];
+
+// Query untuk mendapatkan username berdasarkan public_url
+$sql_user = "SELECT username FROM users WHERE public_url='$public_url'";
+$result_user = $conn->query($sql_user);
+
+if ($result_user->num_rows > 0) {
+    $row_user = $result_user->fetch_assoc();
+    $username = $row_user['username'];
+
+    // Mengatur jumlah data per halaman
+    $limit = 5;
+
+    // Mengambil halaman saat ini dari parameter URL, default adalah halaman 1
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $start = ($page - 1) * $limit;
+
+    // Query untuk menghitung jumlah total agenda
+    $sql_count = "SELECT COUNT(*) as total FROM agendas WHERE username='$username'";
+    $result_count = $conn->query($sql_count);
+    $total_agendas = 0;
+
+    if ($result_count->num_rows > 0) {
+        $row_count = $result_count->fetch_assoc();
+        $total_agendas = $row_count['total'];
+    }
+
+    // Menghitung total halaman
+    $total_pages = ceil($total_agendas / $limit);
+
+    // Query untuk mendapatkan data agenda berdasarkan username dengan paginasi
+    $sql_agendas = "SELECT * FROM agendas WHERE username='$username' ORDER BY id DESC LIMIT $start, $limit";
+    $result_agendas = $conn->query($sql_agendas);
+} else {
+    echo "Invalid URL.";
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +70,9 @@ include "../controllers/database.php";
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center">
-                    <h1 class="text-2xl font-bold text-white">E-Agenda</h1>
+                    <a href="../index.php">
+                        <h1 class="text-2xl font-bold text-white">E-Agenda</h1>
+                    </a>
                 </div>
             </div>
         </div>
@@ -40,33 +81,28 @@ include "../controllers/database.php";
     <!-- Main Content -->
     <main>
         <div class="bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-4xl transition-transform duration-300 transform hover:scale-105">
-            <h2 class="text-3xl font-extrabold text-white mb-4 text-center">Agenda</h2>
+            <h2 class="text-3xl font-extrabold text-white mb-4 text-center">Agenda by <?php echo $username; ?></h2>
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
                     <thead>
                         <tr>
                             <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Judul</th>
                             <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tanggal</th>
-                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Waktu</th>
+                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Jam</th>
+                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tempat</th>
                             <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Kegiatan</th>
-                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Lokasi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-700">
                         <?php
-                        // Query untuk mengambil semua data dari tabel agendas
-                        $sql = "SELECT judul, tanggal, jam, tempat, kegiatan FROM agendas";
-                        $result = $conn->query($sql);
-
-                        // Jika data ditemukan
-                        if ($result->num_rows > 0) {
-                            while ($row = $result->fetch_assoc()) {
+                        if ($result_agendas->num_rows > 0) {
+                            while ($row = $result_agendas->fetch_assoc()) {
                                 echo "<tr class='hover:bg-gray-600 transition duration-300'>";
                                 echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['judul']) . "</td>";
                                 echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['tanggal']) . "</td>";
                                 echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['jam']) . "</td>";
-                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['kegiatan']) . "</td>";
                                 echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['tempat']) . "</td>";
+                                echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['kegiatan']) . "</td>";
                                 echo "</tr>";
                             }
                         } else {
@@ -79,6 +115,18 @@ include "../controllers/database.php";
                         ?>
                     </tbody>
                 </table>
+            </div>
+            <!-- Pagination Links -->
+            <div class="mt-4">
+                <nav class="block">
+                    <ul class="flex pl-0 rounded list-none flex-wrap">
+                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                            <li>
+                                <a href="?id=<?php echo $public_url; ?>&page=<?php echo $i; ?>" class="first:ml-0 text-xs font-semibold flex w-10 h-10 mx-1 items-center justify-center leading-tight text-gray-300 bg-gray-700 rounded-full hover:bg-gray-600 <?php if ($i == $page) echo 'bg-blue-500'; ?>"><?php echo $i; ?></a>
+                            </li>
+                        <?php endfor; ?>
+                    </ul>
+                </nav>
             </div>
         </div>
     </main>
