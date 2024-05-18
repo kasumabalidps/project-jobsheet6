@@ -59,7 +59,7 @@ if ($result_user->num_rows > 0) {
     <!-- Main Content -->
     <main>
         <div class="bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-4xl transition-transform duration-300 transform hover:scale-105">
-            <h2 class="text-3xl font-extrabold text-white mb-4 text-center">Agenda</h2>
+            <h2 class="text-3xl font-extrabold text-white mb-4 text-center">Agenda by <?php echo $username; ?></h2>
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
                     <thead>
