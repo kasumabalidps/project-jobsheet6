@@ -17,16 +17,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST["password"];
     $confirm_password = $_POST["confirm_password"];
     $terms = isset($_POST["terms"]);
+    $public_url = uniqid();
 
     if ($terms) {
         if ($password === $confirm_password) {
             $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-            $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+            $sql = "INSERT INTO users (username, email, password, public_url) VALUES (?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
 
             if ($stmt) {
-                $stmt->bind_param("sss", $username, $email, $hashed_password);
+                $stmt->bind_param("ssss", $username, $email, $hashed_password, $public_url);
 
                 if ($stmt->execute()) {
                     $_SESSION['user'] = $username;
