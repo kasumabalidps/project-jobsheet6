@@ -1,10 +1,8 @@
 <?php
 include "../controllers/database.php";
 
-// Mendapatkan nilai public_url dari URL
 $public_url = $_GET['id'];
 
-// Query untuk mendapatkan username berdasarkan public_url
 $sql_user = "SELECT username FROM users WHERE public_url='$public_url'";
 $result_user = $conn->query($sql_user);
 
@@ -12,14 +10,11 @@ if ($result_user->num_rows > 0) {
     $row_user = $result_user->fetch_assoc();
     $username = $row_user['username'];
 
-    // Mengatur jumlah data per halaman
     $limit = 5;
 
-    // Mengambil halaman saat ini dari parameter URL, default adalah halaman 1
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $start = ($page - 1) * $limit;
 
-    // Query untuk menghitung jumlah total agenda
     $sql_count = "SELECT COUNT(*) as total FROM agendas WHERE username='$username'";
     $result_count = $conn->query($sql_count);
     $total_agendas = 0;
@@ -29,10 +24,8 @@ if ($result_user->num_rows > 0) {
         $total_agendas = $row_count['total'];
     }
 
-    // Menghitung total halaman
     $total_pages = ceil($total_agendas / $limit);
 
-    // Query untuk mendapatkan data agenda berdasarkan username dengan paginasi
     $sql_agendas = "SELECT * FROM agendas WHERE username='$username' ORDER BY id DESC LIMIT $start, $limit";
     $result_agendas = $conn->query($sql_agendas);
 } else {
@@ -53,8 +46,6 @@ if ($result_user->num_rows > 0) {
         body {
             font-family: 'Poppins', sans-serif;
         }
-
-        /* Flexbox untuk memastikan footer di bawah */
         body {
             display: flex;
             flex-direction: column;
@@ -65,7 +56,7 @@ if ($result_user->num_rows > 0) {
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 2.5rem; /* p-10 */
+            padding: 2.5rem; 
         }
         table {
             width: 100%;
@@ -90,9 +81,35 @@ if ($result_user->num_rows > 0) {
             white-space: nowrap;
         }
         .wider {
-            width: 150px; /* Lebarkan kolom */
+            width: 150px;
         }
     </style>
+    <script>
+        function searchAgenda() {
+            var inputTitle, inputDate, filterTitle, filterDate, table, tr, td, i, j, txtValue;
+            inputTitle = document.getElementById("searchTitle");
+            inputDate = document.getElementById("searchDate");
+            filterTitle = inputTitle.value.toUpperCase();
+            filterDate = inputDate.value;
+            table = document.getElementById("agendaTable");
+            tr = table.getElementsByTagName("tr");
+            
+            for (i = 1; i < tr.length; i++) {
+                tr[i].style.display = "none";
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        txtValue = td[j].textContent || td[j].innerText;
+                        if ((td[1] && td[1].innerText.toUpperCase().indexOf(filterTitle) > -1) || 
+                            (td[2] && td[2].innerText.indexOf(filterDate) > -1)) {
+                            tr[i].style.display = "";
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body class="bg-gray-900 text-gray-100">
     <!-- Navbar -->
@@ -112,8 +129,15 @@ if ($result_user->num_rows > 0) {
     <main>
         <div class="bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-6xl transition-transform duration-300 transform hover:scale-105">
             <h2 class="text-3xl font-extrabold text-white mb-4 text-center">Agenda by <?php echo $username; ?></h2>
+
+            <!-- Search Bar -->
+            <div class="flex mb-4 space-x-4">
+                <input type="text" id="searchTitle" onkeyup="searchAgenda()" placeholder="Search by title..." class="w-1/2 p-2 rounded bg-gray-700 text-white" />
+                <input type="date" id="searchDate" onkeyup="searchAgenda()" class="w-1/2 p-2 rounded bg-gray-700 text-white" />
+            </div>
+
             <div class="overflow-x-auto">
-                <table class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
+                <table id="agendaTable" class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
                     <thead>
                         <tr>
                             <th class="py-3 px-6 bg-gray-700 font-semibold text-sm uppercase tracking-wider nowrap">No</th>
@@ -150,8 +174,9 @@ if ($result_user->num_rows > 0) {
                     </tbody>
                 </table>
             </div>
+            
             <!-- Pagination Links -->
-            <div class="mt-4">
+            <div class="mt-4 mb-4">
                 <nav class="block">
                     <ul class="flex pl-0 rounded list-none flex-wrap">
                         <?php for ($i = 1; $i <= $total_pages; $i++): ?>

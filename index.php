@@ -42,6 +42,16 @@ session_start();
             align-items: center;
         }
     </style>
+    <script>
+        function triggerAgendaCleanup() {
+            fetch('./controllers/agenda-exp.php')
+                .then(response => response.text())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
+
+        setInterval(triggerAgendaCleanup, 10000);
+    </script>
 </head>
 <body class="bg-gray-900 text-gray-100">
     <!-- Navbar -->

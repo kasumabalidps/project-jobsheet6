@@ -2,7 +2,6 @@
 session_start();
 require '../controllers/database.php';
 
-// Mengecek apakah session sudah ada
 if (isset($_SESSION['user'])) {
     header("Location: dashboard.php");
     exit();
@@ -200,6 +199,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: #e2e8f0;
         }
     </style>
+        <script>
+    function togglePasswordVisibility() {
+        var passwordField = document.getElementById("password");
+        var toggleIcon = document.getElementById("toggleIcon");
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        } else {
+            passwordField.type = "password";
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        }
+    }
+    </script>
 </head>
 <body class="flex items-center justify-center min-h-screen bg-gray-800">
     <div class="flex w-full max-w-4xl shadow-md">
@@ -234,20 +248,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <img class="banner" src="../images/loginreg.png" alt="Login banner">
         </div>
     </div>
-    <script>
-    function togglePasswordVisibility() {
-        var passwordField = document.getElementById("password");
-        var toggleIcon = document.getElementById("toggleIcon");
-        if (passwordField.type === "password") {
-            passwordField.type = "text";
-            toggleIcon.classList.remove('fa-eye-slash');
-            toggleIcon.classList.add('fa-eye');
-        } else {
-            passwordField.type = "password";
-            toggleIcon.classList.remove('fa-eye');
-            toggleIcon.classList.add('fa-eye-slash');
-        }
-    }
-</script>
 </body>
 </html>
