@@ -5,14 +5,12 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-// Koneksi ke database
 include "../controllers/database.php";
 
 $username = $_SESSION['user'];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['edit_id']) && !empty($_POST['edit_id'])) {
-        // Edit existing agenda
         $edit_id = $_POST['edit_id'];
         $judul = $_POST['judul'];
         $tanggal = $_POST['tanggal'];
@@ -25,7 +23,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "Error: " . $sql . "<br>" . $conn->error;
         }
     } else {
-        // Create new agenda
         $judul = $_POST['judul'];
         $tanggal = $_POST['tanggal'];
         $jam = $_POST['jam'];
@@ -40,7 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 if (isset($_GET['delete_id'])) {
-    // Delete agenda
     $delete_id = $_GET['delete_id'];
     $sql = "DELETE FROM agendas WHERE id='$delete_id' AND username='$username'";
     if ($conn->query($sql) !== TRUE) {
@@ -48,7 +44,6 @@ if (isset($_GET['delete_id'])) {
     }
 }
 
-// Query untuk menghitung jumlah baris
 $sql_count = "SELECT COUNT(*) as total FROM agendas WHERE username='$username'";
 $result_count = $conn->query($sql_count);
 $total_agendas = 0;
@@ -58,7 +53,6 @@ if ($result_count->num_rows > 0) {
     $total_agendas = $row_count['total'];
 }
 
-// Query untuk mendapatkan public_url
 $sql_user = "SELECT public_url FROM users WHERE username='$username'";
 $result_user = $conn->query($sql_user);
 if ($result_user->num_rows > 0) {
@@ -69,7 +63,6 @@ if ($result_user->num_rows > 0) {
     exit();
 }
 
-// Query untuk mengambil 5 agenda terbaru
 $sql_agendas = "SELECT * FROM agendas WHERE username='$username' ORDER BY id DESC LIMIT 5";
 $result_agendas = $conn->query($sql_agendas);
 
@@ -108,7 +101,7 @@ $result_agendas = $conn->query($sql_agendas);
         }
         table td {
             word-break: break-word;
-            max-width: 50ch; /* Approximately 50 characters */
+            max-width: 50ch;
         }
     </style>
 </head>

@@ -1,14 +1,16 @@
 <?php
-require '../controllers/database.php'; // Pastikan jalur ini benar
+require '../controllers/database.php';
 
-// Set timezone ke Asia/Jakarta
 date_default_timezone_set('Asia/Jakarta');
 
-// Ambil waktu saat ini
 $currentDateTime = date('Y-m-d H:i');
 echo "Waktu saat ini: $currentDateTime\n";
 
-// Query untuk menghapus agenda yang sudah lewat
+$tableCheck = $conn->query("SHOW TABLES LIKE 'agends'");
+if($tableCheck->num_rows == 0) {
+    die("Error: Tabel 'agends' tidak ditemukan di database.\n");
+}
+
 $sql = "DELETE FROM agends WHERE CONCAT(tanggal, ' ', jam) < ?";
 $stmt = $conn->prepare($sql);
 
@@ -24,5 +26,5 @@ if ($stmt) {
     echo "Error: " . $conn->error . "\n";
 }
 
-// Tutup koneksi
 $conn->close();
+?>

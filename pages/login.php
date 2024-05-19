@@ -2,7 +2,6 @@
 session_start();
 require '../controllers/database.php';
 
-// Mengecek apakah session sudah ada
 if (isset($_SESSION['user'])) {
     header("Location: dashboard.php");
     exit();

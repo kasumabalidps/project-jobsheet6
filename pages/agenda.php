@@ -5,15 +5,12 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-// Koneksi ke database
 include "../controllers/database.php";
 
 $username = $_SESSION['user'];
 
-// Mengatur jumlah data per halaman
 $limit = 5;
 
-// Mengambil halaman saat ini dari parameter URL, default adalah halaman 1
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $start = ($page - 1) * $limit;
 
@@ -25,11 +22,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $kegiatan = $conn->real_escape_string($_POST['kegiatan']);
 
     if (isset($_POST['edit_id']) && !empty($_POST['edit_id'])) {
-        // Edit existing agenda
         $edit_id = (int)$_POST['edit_id'];
         $sql = "UPDATE agendas SET judul='$judul', tanggal='$tanggal', jam='$jam', tempat='$tempat', kegiatan='$kegiatan' WHERE id='$edit_id' AND username='$username'";
     } else {
-        // Create new agenda
         $sql = "INSERT INTO agendas (username, judul, tanggal, jam, tempat, kegiatan) VALUES ('$username', '$judul', '$tanggal', '$jam', '$tempat', '$kegiatan')";
     }
 
@@ -39,23 +34,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 if (isset($_GET['delete_id'])) {
-    // Delete agenda
     $delete_id = (int)$_GET['delete_id'];
     $sql = "DELETE FROM agendas WHERE id='$delete_id' AND username='$username'";
     if (!$conn->query($sql)) {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
-
-// Query untuk menghitung jumlah baris
 $sql_count = "SELECT COUNT(*) as total FROM agendas WHERE username='$username'";
 $result_count = $conn->query($sql_count);
 $total_agendas = $result_count->num_rows > 0 ? $result_count->fetch_assoc()['total'] : 0;
 
-// Menghitung total halaman
 $total_pages = ceil($total_agendas / $limit);
 
-// Query untuk mendapatkan public_url
 $sql_user = "SELECT public_url FROM users WHERE username='$username'";
 $result_user = $conn->query($sql_user);
 if ($result_user->num_rows > 0) {
@@ -65,7 +55,6 @@ if ($result_user->num_rows > 0) {
     exit();
 }
 
-// Query untuk mengambil agenda dengan paginasi
 $sql_agendas = "SELECT * FROM agendas WHERE username='$username' ORDER BY id DESC LIMIT $start, $limit";
 $result_agendas = $conn->query($sql_agendas);
 ?>
@@ -109,18 +98,22 @@ $result_agendas = $conn->query($sql_agendas);
     </style>
     <script>
         function searchAgenda() {
-            var input, filter, table, tr, td, i, j, txtValue;
-            input = document.getElementById("searchInput");
-            filter = input.value.toUpperCase();
+            var inputTitle, inputDate, filterTitle, filterDate, table, tr, td, i, txtValue;
+            inputTitle = document.getElementById("searchTitle");
+            inputDate = document.getElementById("searchDate");
+            filterTitle = inputTitle.value.toUpperCase();
+            filterDate = inputDate.value.toUpperCase();
             table = document.getElementById("agendaTable");
             tr = table.getElementsByTagName("tr");
+            
             for (i = 1; i < tr.length; i++) {
                 tr[i].style.display = "none";
                 td = tr[i].getElementsByTagName("td");
                 for (j = 0; j < td.length; j++) {
                     if (td[j]) {
                         txtValue = td[j].textContent || td[j].innerText;
-                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        if ((td[1] && td[1].innerText.toUpperCase().indexOf(filterTitle) > -1) || 
+                            (td[2] && td[2].innerText.toUpperCase().indexOf(filterDate) > -1)) {
                             tr[i].style.display = "";
                             break;
                         }
@@ -174,8 +167,9 @@ $result_agendas = $conn->query($sql_agendas);
                 <h3 class="text-2xl font-bold text-white mb-4">List Agenda</h3>
 
                 <!-- Search Bar -->
-                <div class="mb-4">
-                    <input type="text" id="searchInput" onkeyup="searchAgenda()" placeholder="Search by judul, tanggal, or jam..." class="w-full p-2 rounded bg-gray-700 text-white" />
+                <div class="flex mb-4 space-x-4">
+                    <input type="text" id="searchTitle" onkeyup="searchAgenda()" placeholder="Search by title..." class="w-1/2 p-2 rounded bg-gray-700 text-white" />
+                    <input type="date" id="searchDate" onkeyup="searchAgenda()" class="w-1/2 p-2 rounded bg-gray-700 text-white" />
                 </div>
 
                 <div class="overflow-x-auto">
