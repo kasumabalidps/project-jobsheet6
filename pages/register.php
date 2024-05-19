@@ -15,28 +15,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = sanitizeInput($_POST["username"]);
     $email = sanitizeInput($_POST["email"]);
     $password = $_POST["password"];
-    $confirm_password = $_POST["confirm_password"];
+    $confirm_password = sanitizeInput($_POST["confirm_password"]);
     $terms = isset($_POST["terms"]);
     $public_url = uniqid();
 
     if ($terms) {
         if ($password === $confirm_password) {
-            $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-
-            $sql = "INSERT INTO users (username, email, password, public_url) VALUES (?, ?, ?, ?)";
+            // Check if email already exists
+            $sql = "SELECT id FROM users WHERE email = ?";
             $stmt = $conn->prepare($sql);
-
             if ($stmt) {
-                $stmt->bind_param("ssss", $username, $email, $hashed_password, $public_url);
-
-                if ($stmt->execute()) {
-                    $_SESSION['user'] = $username;
-                    setcookie("username", $username, time() + (86400 * 30), "/");
-
-                    header("Location: dashboard.php");
-                    exit();
+                $stmt->bind_param("s", $email);
+                $stmt->execute();
+                $stmt->store_result();
+                if ($stmt->num_rows > 0) {
+                    // Email ada di db
+                    echo '<script>
+                        alert("Mohon Maaf Email Tidak Bisa Digunakan. Silahkan Pilih Email Lain.");
+                        window.location.href = "register.php";
+                    </script>';
+                    exit();                
                 } else {
-                    echo "Error: " . $stmt->error;
+                    // Ga ada yang sama lanjut
+                    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+                    $sql = "INSERT INTO users (username, email, password, public_url) VALUES (?, ?, ?, ?)";
+                    $stmt = $conn->prepare($sql);
+
+                    if ($stmt) {
+                        $stmt->bind_param("ssss", $username, $email, $hashed_password, $public_url);
+
+                        if ($stmt->execute()) {
+                            $_SESSION['user'] = $username;
+                            setcookie("username", $username, time() + (86400 * 30), "/");
+
+                            header("Location: dashboard.php");
+                            exit();
+                        } else {
+                            echo "Error: " . $stmt->error;
+                        }
+                        $stmt->close();
+                    } else {
+                        echo "Error: " . $conn->error;
+                    }
                 }
                 $stmt->close();
             } else {

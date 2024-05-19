@@ -9,7 +9,7 @@ if (isset($_SESSION['user'])) {
 }
 
 function sanitizeInput($data) {
-    return htmlspecialchars(stripslashes(trim($data)));
+    return htmlspecialchars(stripslashes(trim($data ?? '')));
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -41,17 +41,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("Location: dashboard.php");
                     exit();
                 } else {
-                    echo "Password salah.";
+                    echo '<script>
+                        alert("Password salah. Silakan coba lagi.");
+                        window.location.href = "login.php";
+                    </script>';
                 }
             } else {
-                echo "Pengguna tidak ditemukan.";
+                echo '<script>
+                    alert("Email tidak terdaftar. Silakan coba lagi.");
+                    window.location.href = "login.php";
+                </script>';
             }
             $stmt->close();
         } else {
             echo "Error: " . $conn->error;
         }
     } else {
-        echo "Email dan password harus diisi.";
+        echo '<script>
+            alert("Email harus di isi. Silakan coba lagi.");
+            window.location.href = "login.php";
+            </script>';
     }
 }
 ?>

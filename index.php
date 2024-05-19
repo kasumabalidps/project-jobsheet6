@@ -51,7 +51,7 @@ session_start();
                         <a href="./pages/dashboard.php">
                         <span class="text-gray-300">Dashboard</span>
                         </a>
-                        <a href="./pages/logout.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Logout</a>
+                        <a href="/controllers/logout.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Logout</a>
                     <?php else: ?>
                         <a href="./pages/login.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Login</a>
                         <a href="./pages/register.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Register</a>
