@@ -119,14 +119,14 @@ $result_agendas = $conn->query($sql_agendas);
             document.getElementById('editModal').classList.add('hidden');
         }
 
-        function triggerAgendaCleanup() {
+        function triggerAgendaHapus() {
             fetch('/controllers/agenda-exp.php')
                 .then(response => response.text())
                 .then(data => console.log(data))
                 .catch(error => console.error('Error:', error));
         }
 
-        setInterval(triggerAgendaCleanup, 5000);
+        setInterval(triggerAgendaHapus, 60000);
     </script>
 </head>
 <body class="bg-gray-900 text-gray-100">
