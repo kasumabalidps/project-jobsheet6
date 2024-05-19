@@ -13,15 +13,19 @@ function sanitizeInput($data) {
 
 function getUserIP() {
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-        // IP dari shared internet
         return $_SERVER['HTTP_CLIENT_IP'];
     } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        // IP yang dipass dari proxy
         return $_SERVER['HTTP_X_FORWARDED_FOR'];
     } else {
-        // IP address dari remote address
         return $_SERVER['REMOTE_ADDR'];
     }
+}
+
+function getGeolocation($ip) {
+    $apiKey = '321012a42b8276'; 
+    $url = "http://ipinfo.io/{$ip}?token={$apiKey}";
+    $response = file_get_contents($url);
+    return json_decode($response, true);
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -31,11 +35,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $confirm_password = sanitizeInput($_POST["confirm_password"]);
     $terms = isset($_POST["terms"]);
     $public_url = uniqid();
-    $ip_address = getUserIP(); // Mendapatkan alamat IP pengguna
+    $ip_address = getUserIP();
+    $geo_info = getGeolocation($ip_address); 
+    $geo_location = $geo_info['city'] . ', ' . $geo_info['country']; 
 
     if ($terms) {
         if ($password === $confirm_password) {
-            // Check if email already exists
             $sql = "SELECT id FROM users WHERE email = ?";
             $stmt = $conn->prepare($sql);
             if ($stmt) {
@@ -43,21 +48,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->execute();
                 $stmt->store_result();
                 if ($stmt->num_rows > 0) {
-                    // Email ada di db
                     echo '<script>
                         alert("Mohon Maaf Email Tidak Bisa Digunakan. Silahkan Pilih Email Lain.");
                         window.location.href = "register.php";
                     </script>';
                     exit();                
                 } else {
-                    // Ga ada yang sama lanjut
                     $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-                    $sql = "INSERT INTO users (username, email, password, public_url, ip) VALUES (?, ?, ?, ?, ?)";
+                    $sql = "INSERT INTO users (username, email, password, public_url, ip, geo) VALUES (?, ?, ?, ?, ?, ?)";
                     $stmt = $conn->prepare($sql);
 
                     if ($stmt) {
-                        $stmt->bind_param("sssss", $username, $email, $hashed_password, $public_url, $ip_address);
+                        $stmt->bind_param("ssssss", $username, $email, $hashed_password, $public_url, $ip_address, $geo_location);
 
                         if ($stmt->execute()) {
                             $_SESSION['user'] = $username;
