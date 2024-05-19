@@ -137,7 +137,7 @@ if ($result_user->num_rows > 0) {
 
             <!-- Search Bar -->
             <div class="mb-4">
-                <input type="text" id="searchInput" onkeyup="searchAgenda()" placeholder="Search by judul, tanggal, or waktu..." class="w-full p-2 rounded bg-gray-700 text-white" />
+                <input type="text" id="searchInput" onkeyup="searchAgenda()" placeholder="Search by judul, tanggal, or jam..." class="w-full p-2 rounded bg-gray-700 text-white" />
             </div>
 
             <div class="overflow-x-auto">
