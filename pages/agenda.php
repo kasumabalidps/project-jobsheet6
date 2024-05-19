@@ -107,6 +107,28 @@ $result_agendas = $conn->query($sql_agendas);
             max-width: 50ch;
         }
     </style>
+    <script>
+        function searchAgenda() {
+            var input, filter, table, tr, td, i, j, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("agendaTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 1; i < tr.length; i++) {
+                tr[i].style.display = "none";
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body class="bg-gray-900 text-gray-100">
     <!-- Navbar -->
@@ -150,8 +172,14 @@ $result_agendas = $conn->query($sql_agendas);
             <!-- Section Agenda Terbaru -->
             <div class="bg-gray-800 shadow-lg rounded-lg p-6 mb-8 transition-transform duration-300">
                 <h3 class="text-2xl font-bold text-white mb-4">List Agenda</h3>
+
+                <!-- Search Bar -->
+                <div class="mb-4">
+                    <input type="text" id="searchInput" onkeyup="searchAgenda()" placeholder="Search by title, date, or time..." class="w-full p-2 rounded bg-gray-700 text-white" />
+                </div>
+
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
+                    <table id="agendaTable" class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
                         <thead>
                             <tr>
                                 <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">No</th>
@@ -193,8 +221,9 @@ $result_agendas = $conn->query($sql_agendas);
                         </tbody>
                     </table>
                 </div>
+                
                 <!-- Pagination Links -->
-                <div class="mt-4">
+                <div class="mt-4 mb-4">
                     <nav class="block">
                         <ul class="flex pl-0 rounded list-none flex-wrap">
                             <?php for ($i = 1; $i <= $total_pages; $i++): ?>
