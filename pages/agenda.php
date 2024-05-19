@@ -18,39 +18,31 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $start = ($page - 1) * $limit;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $judul = $conn->real_escape_string($_POST['judul']);
+    $tanggal = $conn->real_escape_string($_POST['tanggal']);
+    $jam = $conn->real_escape_string($_POST['jam']);
+    $tempat = $conn->real_escape_string($_POST['tempat']);
+    $kegiatan = $conn->real_escape_string($_POST['kegiatan']);
+
     if (isset($_POST['edit_id']) && !empty($_POST['edit_id'])) {
         // Edit existing agenda
-        $edit_id = $_POST['edit_id'];
-        $judul = $_POST['judul'];
-        $tanggal = $_POST['tanggal'];
-        $jam = $_POST['jam'];
-        $tempat = $_POST['tempat'];
-        $kegiatan = $_POST['kegiatan'];
-
+        $edit_id = (int)$_POST['edit_id'];
         $sql = "UPDATE agendas SET judul='$judul', tanggal='$tanggal', jam='$jam', tempat='$tempat', kegiatan='$kegiatan' WHERE id='$edit_id' AND username='$username'";
-        if ($conn->query($sql) !== TRUE) {
-            echo "Error: " . $sql . "<br>" . $conn->error;
-        }
     } else {
         // Create new agenda
-        $judul = $_POST['judul'];
-        $tanggal = $_POST['tanggal'];
-        $jam = $_POST['jam'];
-        $tempat = $_POST['tempat'];
-        $kegiatan = $_POST['kegiatan'];
-
         $sql = "INSERT INTO agendas (username, judul, tanggal, jam, tempat, kegiatan) VALUES ('$username', '$judul', '$tanggal', '$jam', '$tempat', '$kegiatan')";
-        if ($conn->query($sql) !== TRUE) {
-            echo "Error: " . $sql . "<br>" . $conn->error;
-        }
+    }
+
+    if (!$conn->query($sql)) {
+        echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
 
 if (isset($_GET['delete_id'])) {
     // Delete agenda
-    $delete_id = $_GET['delete_id'];
+    $delete_id = (int)$_GET['delete_id'];
     $sql = "DELETE FROM agendas WHERE id='$delete_id' AND username='$username'";
-    if ($conn->query($sql) !== TRUE) {
+    if (!$conn->query($sql)) {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
@@ -58,12 +50,7 @@ if (isset($_GET['delete_id'])) {
 // Query untuk menghitung jumlah baris
 $sql_count = "SELECT COUNT(*) as total FROM agendas WHERE username='$username'";
 $result_count = $conn->query($sql_count);
-$total_agendas = 0;
-
-if ($result_count->num_rows > 0) {
-    $row_count = $result_count->fetch_assoc();
-    $total_agendas = $row_count['total'];
-}
+$total_agendas = $result_count->num_rows > 0 ? $result_count->fetch_assoc()['total'] : 0;
 
 // Menghitung total halaman
 $total_pages = ceil($total_agendas / $limit);
@@ -72,8 +59,7 @@ $total_pages = ceil($total_agendas / $limit);
 $sql_user = "SELECT public_url FROM users WHERE username='$username'";
 $result_user = $conn->query($sql_user);
 if ($result_user->num_rows > 0) {
-    $row_user = $result_user->fetch_assoc();
-    $public_url = $row_user['public_url'];
+    $public_url = $result_user->fetch_assoc()['public_url'];
 } else {
     echo "User not found.";
     exit();
@@ -92,6 +78,11 @@ $result_agendas = $conn->query($sql_agendas);
     <title>Dashboard - E-Agenda</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url("https://fonts.googleapis.com/css?family=Poppins:400,500&display=swap");
+        body {
+            font-family: 'Poppins', sans-serif;
+        }        
+
         body {
             display: flex;
             flex-direction: column;
@@ -110,6 +101,10 @@ $result_agendas = $conn->query($sql_agendas);
             flex: 1;
             padding: 2.5rem;
             background: #111827;
+        }
+        table td {
+            word-break: break-word;
+            max-width: 50ch;
         }
     </style>
 </head>
@@ -182,8 +177,10 @@ $result_agendas = $conn->query($sql_agendas);
                                     echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['jam']) . "</td>";
                                     echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['tempat']) . "</td>";
                                     echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['kegiatan']) . "</td>";
+                                    $kegiatan_length = strlen($row['kegiatan']);
+                                    $edit_button = $kegiatan_length <= 200 ? "<a href='#' class='text-blue-500 hover:underline' onclick='editAgenda(" . $row['id'] . ", \"" . htmlspecialchars($row['judul']) . "\", \"" . htmlspecialchars($row['tanggal']) . "\", \"" . htmlspecialchars($row['jam']) . "\", \"" . htmlspecialchars($row['tempat']) . "\", \"" . htmlspecialchars($row['kegiatan']) . "\")'>Edit</a>" : "";
                                     echo "<td class='py-4 px-6 text-center'>
-                                            <a href='#' class='text-blue-500 hover:underline' onclick='editAgenda(" . $row['id'] . ", \"" . htmlspecialchars($row['judul']) . "\", \"" . htmlspecialchars($row['tanggal']) . "\", \"" . htmlspecialchars($row['jam']) . "\", \"" . htmlspecialchars($row['tempat']) . "\", \"" . htmlspecialchars($row['kegiatan']) . "\")'>Edit</a> |
+                                            $edit_button |
                                             <a href='?delete_id=" . $row['id'] . "' class='text-red-500 hover:underline'>Delete</a>
                                           </td>";
                                     echo "</tr>";
@@ -301,6 +298,11 @@ $result_agendas = $conn->query($sql_agendas);
 
     <script>
         function editAgenda(id, judul, tanggal, jam, tempat, kegiatan) {
+            if (kegiatan.length > 200) {
+                alert('Kegiatan terlalu panjang untuk diedit.');
+                return;
+            }
+
             document.getElementById('edit_id_modal').value = id;
             document.getElementById('judul_modal').value = judul;
             document.getElementById('tanggal_modal').value = tanggal;

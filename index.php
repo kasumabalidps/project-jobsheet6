@@ -10,6 +10,11 @@ session_start();
     <title>E-Agenda</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url("https://fonts.googleapis.com/css?family=Poppins:400,500&display=swap");
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    
         .marquee {
             white-space: nowrap;
             overflow: hidden;
@@ -131,5 +136,15 @@ session_start();
             </div>
         </div>
     </footer>
+    <script>
+        function triggerAgendaCleanup() {
+            fetch('./controllers/agenda-exp.php')
+                .then(response => response.text())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
+
+        setInterval(triggerAgendaCleanup, 10000);
+    </script>
 </body>
 </html>
