@@ -72,8 +72,8 @@ if ($result_user->num_rows > 0) {
 // Query untuk mengambil 5 agenda terbaru
 $sql_agendas = "SELECT * FROM agendas WHERE username='$username' ORDER BY id DESC LIMIT 5";
 $result_agendas = $conn->query($sql_agendas);
-?>
 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -82,6 +82,11 @@ $result_agendas = $conn->query($sql_agendas);
     <title>Dashboard - E-Agenda</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url("https://fonts.googleapis.com/css?family=Poppins:400,500&display=swap");
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
         body {
             display: flex;
             flex-direction: column;
@@ -100,6 +105,10 @@ $result_agendas = $conn->query($sql_agendas);
             flex: 1;
             padding: 2.5rem;
             background: #111827;
+        }
+        table td {
+            word-break: break-word;
+            max-width: 50ch; /* Approximately 50 characters */
         }
     </style>
 </head>
@@ -183,7 +192,7 @@ $result_agendas = $conn->query($sql_agendas);
                         <tbody class="divide-y divide-gray-700">
                             <?php
                             // Ambil data dari database
-                            if ($result_agendas->num_rows > 0) {
+                            if ($result_agendas && $result_agendas->num_rows > 0) {
                                 // Output data dari setiap baris
                                 $no = 1;
                                 while($row = $result_agendas->fetch_assoc()) {
@@ -250,7 +259,7 @@ $result_agendas = $conn->query($sql_agendas);
     </main>
 
     <!-- Modal Edit Agenda -->
-    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
         <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
             <h3 class="text-2xl font-bold text-white mb-4">Edit Agenda</h3>
             <form method="POST" action="">
@@ -313,6 +322,15 @@ $result_agendas = $conn->query($sql_agendas);
         function closeModal() {
             document.getElementById('editModal').classList.add('hidden');
         }
+
+        function triggerAgendaCleanup() {
+            fetch('/controllers/agenda-exp.php')
+                .then(response => response.text())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
+
+        setInterval(triggerAgendaCleanup, 10000);
     </script>
 </body>
 </html>

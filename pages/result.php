@@ -49,6 +49,11 @@ if ($result_user->num_rows > 0) {
     <title>Agenda Result - E-Agenda</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url("https://fonts.googleapis.com/css?family=Poppins:400,500&display=swap");
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
         /* Flexbox untuk memastikan footer di bawah */
         body {
             display: flex;
@@ -61,6 +66,31 @@ if ($result_user->num_rows > 0) {
             justify-content: center;
             align-items: center;
             padding: 2.5rem; /* p-10 */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            word-break: break-word;
+            padding: 1rem; 
+            text-align: center;
+            border: 1px solid #374151; 
+        }
+        table th {
+            background-color: #374151; 
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #1f2937; 
+        }
+        table tbody tr:hover {
+            background-color: #4b5563; 
+        }
+        .nowrap {
+            white-space: nowrap;
+        }
+        .wider {
+            width: 150px; /* Lebarkan kolom */
         }
     </style>
 </head>
@@ -80,34 +110,38 @@ if ($result_user->num_rows > 0) {
 
     <!-- Main Content -->
     <main>
-        <div class="bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-4xl transition-transform duration-300 transform hover:scale-105">
+        <div class="bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-6xl transition-transform duration-300 transform hover:scale-105">
             <h2 class="text-3xl font-extrabold text-white mb-4 text-center">Agenda by <?php echo $username; ?></h2>
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
                     <thead>
                         <tr>
-                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Judul</th>
-                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tanggal</th>
-                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Jam</th>
-                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tempat</th>
-                            <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Kegiatan</th>
+                            <th class="py-3 px-6 bg-gray-700 font-semibold text-sm uppercase tracking-wider nowrap">No</th>
+                            <th class="py-3 px-6 bg-gray-700 font-semibold text-sm uppercase tracking-wider">Judul</th>
+                            <th class="py-3 px-6 bg-gray-700 font-semibold text-sm uppercase tracking-wider nowrap wider">Tanggal</th>
+                            <th class="py-3 px-6 bg-gray-700 font-semibold text-sm uppercase tracking-wider nowrap wider">Jam</th>
+                            <th class="py-3 px-6 bg-gray-700 font-semibold text-sm uppercase tracking-wider nowrap wider">Tempat</th>
+                            <th class="py-3 px-6 bg-gray-700 font-semibold text-sm uppercase tracking-wider">Kegiatan</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-700">
                         <?php
                         if ($result_agendas->num_rows > 0) {
+                            $no = $start + 1;
                             while ($row = $result_agendas->fetch_assoc()) {
                                 echo "<tr class='hover:bg-gray-600 transition duration-300'>";
+                                echo "<td class='py-4 px-6 text-center'>" . $no . "</td>";
                                 echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['judul']) . "</td>";
                                 echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['tanggal']) . "</td>";
                                 echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['jam']) . "</td>";
                                 echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['tempat']) . "</td>";
                                 echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['kegiatan']) . "</td>";
                                 echo "</tr>";
+                                $no++;
                             }
                         } else {
                             echo "<tr class='hover:bg-gray-600 transition duration-300'>";
-                            echo "<td class='py-4 px-6 text-center' colspan='5'>No data found</td>";
+                            echo "<td class='py-4 px-6 text-center' colspan='6'>No data found</td>";
                             echo "</tr>";
                         }
 
