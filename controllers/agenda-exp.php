@@ -1,17 +1,17 @@
 <?php
 require '../controllers/database.php';
 
-date_default_timezone_set('Asia/Jakarta');
+date_default_timezone_set('Asia/Makassar'); // Waktu Bali
 
 $currentDateTime = date('Y-m-d H:i');
-echo "Waktu saat ini: $currentDateTime\n";
+echo "Waktu saat ini: $currentDateTime\n"; // Debugging aja sih
 
-$tableCheck = $conn->query("SHOW TABLES LIKE 'agends'");
+$tableCheck = $conn->query("SHOW TABLES LIKE 'agendas'");
 if($tableCheck->num_rows == 0) {
-    die("Error: Tabel 'agends' tidak ditemukan di database.\n");
+    die("Error: Tabel 'agendas' tidak ditemukan di database.\n");
 }
 
-$sql = "DELETE FROM agends WHERE CONCAT(tanggal, ' ', jam) < ?";
+$sql = "DELETE FROM agendas WHERE CONCAT(tanggal, ' ', jam) < ?";
 $stmt = $conn->prepare($sql);
 
 if ($stmt) {

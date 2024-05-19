@@ -104,6 +104,30 @@ $result_agendas = $conn->query($sql_agendas);
             max-width: 50ch;
         }
     </style>
+        <script>
+        function editAgenda(id, judul, tanggal, jam, tempat, kegiatan) {
+            document.getElementById('edit_id_modal').value = id;
+            document.getElementById('judul_modal').value = judul;
+            document.getElementById('tanggal_modal').value = tanggal;
+            document.getElementById('jam_modal').value = jam;
+            document.getElementById('tempat_modal').value = tempat;
+            document.getElementById('kegiatan_modal').value = kegiatan;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        function triggerAgendaCleanup() {
+            fetch('/controllers/agenda-exp.php')
+                .then(response => response.text())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
+
+        setInterval(triggerAgendaCleanup, 5000);
+    </script>
 </head>
 <body class="bg-gray-900 text-gray-100">
     <!-- Navbar -->
@@ -300,30 +324,5 @@ $result_agendas = $conn->query($sql_agendas);
             </div>
         </div>
     </footer>
-
-    <script>
-        function editAgenda(id, judul, tanggal, jam, tempat, kegiatan) {
-            document.getElementById('edit_id_modal').value = id;
-            document.getElementById('judul_modal').value = judul;
-            document.getElementById('tanggal_modal').value = tanggal;
-            document.getElementById('jam_modal').value = jam;
-            document.getElementById('tempat_modal').value = tempat;
-            document.getElementById('kegiatan_modal').value = kegiatan;
-            document.getElementById('editModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('editModal').classList.add('hidden');
-        }
-
-        function triggerAgendaCleanup() {
-            fetch('/controllers/agenda-exp.php')
-                .then(response => response.text())
-                .then(data => console.log(data))
-                .catch(error => console.error('Error:', error));
-        }
-
-        setInterval(triggerAgendaCleanup, 10000);
-    </script>
 </body>
 </html>

@@ -96,6 +96,26 @@ $result_agendas = $conn->query($sql_agendas);
             max-width: 50ch;
         }
     </style>
+        <script>
+        function editAgenda(id, judul, tanggal, jam, tempat, kegiatan) {
+            if (kegiatan.length > 200) {
+                alert('Kegiatan terlalu panjang untuk diedit.');
+                return;
+            }
+
+            document.getElementById('edit_id_modal').value = id;
+            document.getElementById('judul_modal').value = judul;
+            document.getElementById('tanggal_modal').value = tanggal;
+            document.getElementById('jam_modal').value = jam;
+            document.getElementById('tempat_modal').value = tempat;
+            document.getElementById('kegiatan_modal').value = kegiatan;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+    </script>
     <script>
         function searchAgenda() {
             var inputTitle, inputDate, filterTitle, filterDate, table, tr, td, i, txtValue;
@@ -318,26 +338,5 @@ $result_agendas = $conn->query($sql_agendas);
             </div>
         </div>
     </footer>
-
-    <script>
-        function editAgenda(id, judul, tanggal, jam, tempat, kegiatan) {
-            if (kegiatan.length > 200) {
-                alert('Kegiatan terlalu panjang untuk diedit.');
-                return;
-            }
-
-            document.getElementById('edit_id_modal').value = id;
-            document.getElementById('judul_modal').value = judul;
-            document.getElementById('tanggal_modal').value = tanggal;
-            document.getElementById('jam_modal').value = jam;
-            document.getElementById('tempat_modal').value = tempat;
-            document.getElementById('kegiatan_modal').value = kegiatan;
-            document.getElementById('editModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('editModal').classList.add('hidden');
-        }
-    </script>
 </body>
 </html>

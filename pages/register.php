@@ -196,6 +196,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: #e2e8f0;
         }
     </style>
+        <script>
+    function togglePasswordVisibility(passwordId, toggleIconId) {
+        var passwordField = document.getElementById(passwordId);
+        var toggleIcon = document.getElementById(toggleIconId);
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        } else {
+            passwordField.type = "password";
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        }
+    }
+    </script>
 </head>
 <body class="flex items-center justify-center min-h-screen bg-gray-800">
     <div class="flex w-full max-w-4xl shadow-md">
@@ -236,20 +251,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <img class="banner" src="../images/loginreg.png" alt="Register banner">
         </div>
     </div>
-    <script>
-    function togglePasswordVisibility(passwordId, toggleIconId) {
-        var passwordField = document.getElementById(passwordId);
-        var toggleIcon = document.getElementById(toggleIconId);
-        if (passwordField.type === "password") {
-            passwordField.type = "text";
-            toggleIcon.classList.remove('fa-eye-slash');
-            toggleIcon.classList.add('fa-eye');
-        } else {
-            passwordField.type = "password";
-            toggleIcon.classList.remove('fa-eye');
-            toggleIcon.classList.add('fa-eye-slash');
-        }
-    }
-    </script>
 </body>
 </html>
