@@ -11,30 +11,10 @@ function sanitizeInput($data) {
     return htmlspecialchars(stripslashes(trim($data ?? '')));
 }
 
-function getUserIP() {
-    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-        return $_SERVER['HTTP_CLIENT_IP'];
-    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        return $_SERVER['HTTP_X_FORWARDED_FOR'];
-    } else {
-        return $_SERVER['REMOTE_ADDR'];
-    }
-}
-
-function getGeolocation($ip) {
-    $apiKey = '321012a42b8276';
-    $url = "http://ipinfo.io/{$ip}?token={$apiKey}";
-    $response = file_get_contents($url);
-    return json_decode($response, true);
-}
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = isset($_POST['email']) ? sanitizeInput($_POST['email']) : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
     $remember = isset($_POST['remember']) ? true : false;
-    $ip_address = getUserIP();
-    $geo_info = getGeolocation($ip_address); 
-    $geo_location = $geo_info['city'] . ', ' . $geo_info['country']; 
 
     if ($email && $password) {
         $sql = "SELECT id, username, password FROM users WHERE email = ?";
@@ -55,14 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     if ($remember) {
                         setcookie("username", $username, time() + (86400 * 30), "/");
-                    }
-
-                    $update_sql = "UPDATE users SET ip = ?, geo = ? WHERE username = ?";
-                    $update_stmt = $conn->prepare($update_sql);
-                    if ($update_stmt) {
-                        $update_stmt->bind_param("sss", $ip_address, $geo_location, $username);
-                        $update_stmt->execute();
-                        $update_stmt->close();
                     }
 
                     header("Location: dashboard.php");

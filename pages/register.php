@@ -11,23 +11,6 @@ function sanitizeInput($data) {
     return htmlspecialchars(stripslashes(trim($data)));
 }
 
-function getUserIP() {
-    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-        return $_SERVER['HTTP_CLIENT_IP'];
-    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        return $_SERVER['HTTP_X_FORWARDED_FOR'];
-    } else {
-        return $_SERVER['REMOTE_ADDR'];
-    }
-}
-
-function getGeolocation($ip) {
-    $apiKey = '321012a42b8276'; 
-    $url = "http://ipinfo.io/{$ip}?token={$apiKey}";
-    $response = file_get_contents($url);
-    return json_decode($response, true);
-}
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = sanitizeInput($_POST["username"]);
     $email = sanitizeInput($_POST["email"]);
@@ -35,9 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $confirm_password = sanitizeInput($_POST["confirm_password"]);
     $terms = isset($_POST["terms"]);
     $public_url = uniqid();
-    $ip_address = getUserIP();
-    $geo_info = getGeolocation($ip_address); 
-    $geo_location = $geo_info['city'] . ', ' . $geo_info['country']; 
 
     if ($terms) {
         if ($password === $confirm_password) {
@@ -56,11 +36,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 } else {
                     $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-                    $sql = "INSERT INTO users (username, email, password, public_url, ip, geo) VALUES (?, ?, ?, ?, ?, ?)";
+                    $sql = "INSERT INTO users (username, email, password, public_url) VALUES (?, ?, ?, ?)";
                     $stmt = $conn->prepare($sql);
 
                     if ($stmt) {
-                        $stmt->bind_param("ssssss", $username, $email, $hashed_password, $public_url, $ip_address, $geo_location);
+                        $stmt->bind_param("ssss", $username, $email, $hashed_password, $public_url);
 
                         if ($stmt->execute()) {
                             $_SESSION['user'] = $username;
