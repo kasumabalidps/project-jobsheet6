@@ -86,25 +86,41 @@ if ($result_user->num_rows > 0) {
     </style>
     <script>
         function searchAgenda() {
-            var inputTitle, inputDate, filterTitle, filterDate, table, tr, td, i, j, txtValue;
-            inputTitle = document.getElementById("searchTitle");
-            inputDate = document.getElementById("searchDate");
-            filterTitle = inputTitle.value.toUpperCase();
-            filterDate = inputDate.value;
+            var inputTitle, inputDateStart, inputDateEnd, filterTitle, filterDateStart, filterDateEnd, table, tr, td, i, txtValue;
+            inputTitle = document.getElementById("searchTitle").value.toUpperCase();
+            inputDateStart = document.getElementById("searchDateStart").value;
+            inputDateEnd = document.getElementById("searchDateEnd").value;
             table = document.getElementById("agendaTable");
             tr = table.getElementsByTagName("tr");
-            
+
             for (i = 1; i < tr.length; i++) {
-                tr[i].style.display = "none";
+                tr[i].style.display = "";
                 td = tr[i].getElementsByTagName("td");
-                for (j = 0; j < td.length; j++) {
-                    if (td[j]) {
-                        txtValue = td[j].textContent || td[j].innerText;
-                        if ((td[1] && td[1].innerText.toUpperCase().indexOf(filterTitle) > -1) || 
-                            (td[2] && td[2].innerText.indexOf(filterDate) > -1)) {
-                            tr[i].style.display = "";
-                            break;
+                if (td) {
+                    let showRow = true;
+
+                    // Check Title
+                    if (inputTitle && td[1].innerText.toUpperCase().indexOf(inputTitle) == -1) {
+                        showRow = false;
+                    }
+
+                    // Check Date Range
+                    if (inputDateStart || inputDateEnd) {
+                        let agendaDate = new Date(td[2].innerText);
+                        let startDate = inputDateStart ? new Date(inputDateStart) : null;
+                        let endDate = inputDateEnd ? new Date(inputDateEnd) : null;
+
+                        if (startDate && agendaDate < startDate) {
+                            showRow = false;
                         }
+
+                        if (endDate && agendaDate > endDate) {
+                            showRow = false;
+                        }
+                    }
+
+                    if (!showRow) {
+                        tr[i].style.display = "none";
                     }
                 }
             }
@@ -132,8 +148,10 @@ if ($result_user->num_rows > 0) {
 
             <!-- Search Bar -->
             <div class="flex mb-4 space-x-4">
-                <input type="text" id="searchTitle" onkeyup="searchAgenda()" placeholder="Search by title..." class="w-1/2 p-2 rounded bg-gray-700 text-white" />
-                <input type="date" id="searchDate" onkeyup="searchAgenda()" class="w-1/2 p-2 rounded bg-gray-700 text-white" />
+                <input type="text" id="searchTitle" onkeyup="searchAgenda()" placeholder="Search by title..." class="w-1/3 p-2 rounded bg-gray-700 text-white" />
+                <input type="date" id="searchDateStart" onkeyup="searchAgenda()" placeholder="Start Date" class="w-1/3 p-2 rounded bg-gray-700 text-white" />
+                <span class="text-white p-2">-</span>
+                <input type="date" id="searchDateEnd" onkeyup="searchAgenda()" placeholder="End Date" class="w-1/3 p-2 rounded bg-gray-700 text-white" />
             </div>
 
             <div class="overflow-x-auto">

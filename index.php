@@ -83,7 +83,7 @@ session_start();
 
     <!-- Main Content -->
     <main class="flex flex-col items-center justify-center text-center py-20 px-4">
-        <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-4">Jadwal Agenda</h2>
+        <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-4">Jadwal Agenda Pribadi</h2>
         <p class="text-lg md:text-xl text-gray-400 mb-8">Kelola dan lihat jadwal agenda Anda dengan mudah dan efisien.</p>
         <div class="bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-4xl transition-transform duration-300 transform hover:scale-105">
             <div class="overflow-x-auto">
