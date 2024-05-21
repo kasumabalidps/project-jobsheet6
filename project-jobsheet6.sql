@@ -16,12 +16,10 @@
 
 
 -- Dumping database structure for project-kampus
-DROP DATABASE IF EXISTS `project-kampus`;
-CREATE DATABASE IF NOT EXISTS `project-kampus` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE IF NOT EXISTS `project-kampus` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `project-kampus`;
 
 -- Dumping structure for table project-kampus.agendas
-DROP TABLE IF EXISTS `agendas`;
 CREATE TABLE IF NOT EXISTS `agendas` (
   `id` int NOT NULL AUTO_INCREMENT,
   `judul` varchar(255) DEFAULT NULL,
@@ -37,7 +35,6 @@ CREATE TABLE IF NOT EXISTS `agendas` (
 -- Data exporting was unselected.
 
 -- Dumping structure for table project-kampus.users
-DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
