@@ -7,7 +7,7 @@ if (!isset($_SESSION['user'])) {
 
 include "../controllers/database.php";
 
-$username = $_SESSION['user'];
+$username = $_SESSION['user'] ?? '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['edit_id']) && !empty($_POST['edit_id'])) {
@@ -17,8 +17,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $jam = $_POST['jam'];
         $tempat = $_POST['tempat'];
         $kegiatan = $_POST['kegiatan'];
+        $pic = $_POST['pic'];  // Mengganti $kegiatan menjadi $pic
 
-        $sql = "UPDATE agendas SET judul='$judul', tanggal='$tanggal', jam='$jam', tempat='$tempat', kegiatan='$kegiatan' WHERE id='$edit_id' AND username='$username'";
+        $sql = "UPDATE agendas SET judul='$judul', tanggal='$tanggal', jam='$jam', tempat='$tempat', kegiatan='$kegiatan', pic='$pic' WHERE id='$edit_id' AND username='$username'";
         if ($conn->query($sql) !== TRUE) {
             echo "Error: " . $sql . "<br>" . $conn->error;
         }
@@ -28,8 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $jam = $_POST['jam'];
         $tempat = $_POST['tempat'];
         $kegiatan = $_POST['kegiatan'];
+        $pic = $_POST['pic'];  // Mengganti $kegiatan menjadi $pic
 
-        $sql = "INSERT INTO agendas (username, judul, tanggal, jam, tempat, kegiatan) VALUES ('$username', '$judul', '$tanggal', '$jam', '$tempat', '$kegiatan')";
+        $sql = "INSERT INTO agendas (username, judul, tanggal, jam, tempat, kegiatan, pic) VALUES ('$username', '$judul', '$tanggal', '$jam', '$tempat', '$kegiatan', '$pic')";
         if ($conn->query($sql) !== TRUE) {
             echo "Error: " . $sql . "<br>" . $conn->error;
         }
@@ -57,7 +59,7 @@ $sql_user = "SELECT public_url FROM users WHERE username='$username'";
 $result_user = $conn->query($sql_user);
 if ($result_user->num_rows > 0) {
     $row_user = $result_user->fetch_assoc();
-    $public_url = $row_user['public_url'];
+    $public_url = $row_user['public_url'] ?? '';
 } else {
     echo "User not found.";
     exit();
@@ -104,14 +106,15 @@ $result_agendas = $conn->query($sql_agendas);
             max-width: 50ch;
         }
     </style>
-        <script>
-        function editAgenda(id, judul, tanggal, jam, tempat, kegiatan) {
+    <script>
+        function editAgenda(id, judul, tanggal, jam, tempat, kegiatan, pic) {
             document.getElementById('edit_id_modal').value = id;
             document.getElementById('judul_modal').value = judul;
             document.getElementById('tanggal_modal').value = tanggal;
             document.getElementById('jam_modal').value = jam;
             document.getElementById('tempat_modal').value = tempat;
             document.getElementById('kegiatan_modal').value = kegiatan;
+            document.getElementById('pic_modal').value = pic;
             document.getElementById('editModal').classList.remove('hidden');
         }
 
@@ -138,7 +141,7 @@ $result_agendas = $conn->query($sql_agendas);
                     <h1 class="text-2xl font-bold text-white">E-Agenda</h1>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span class="text-gray-300">Halo Bang, <?php echo htmlspecialchars($_SESSION['user']); ?>!</span>
+                    <span class="text-gray-300">Halo Bang, <?php echo htmlspecialchars($username ?? '', ENT_QUOTES, 'UTF-8'); ?>!</span>
                     <a href="../controllers/logout.php" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300">Logout</a>
                 </div>
             </div>
@@ -203,6 +206,7 @@ $result_agendas = $conn->query($sql_agendas);
                                 <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Jam</th>
                                 <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Tempat</th>
                                 <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Kegiatan</th>
+                                <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">PIC</th>
                                 <th class="py-3 px-6 bg-gray-700 font-semibold text-center text-sm uppercase tracking-wider">Aksi</th>
                             </tr>
                         </thead>
@@ -215,20 +219,21 @@ $result_agendas = $conn->query($sql_agendas);
                                 while($row = $result_agendas->fetch_assoc()) {
                                     echo "<tr class='hover:bg-gray-600 transition duration-300'>";
                                     echo "<td class='py-4 px-6 text-center'>" . $no . "</td>";
-                                    echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['judul']) . "</td>";
-                                    echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['tanggal']) . "</td>";
-                                    echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['jam']) . "</td>";
-                                    echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['tempat']) . "</td>";
-                                    echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['kegiatan']) . "</td>";
+                                    echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['judul'], ENT_QUOTES, 'UTF-8') . "</td>";
+                                    echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['tanggal'], ENT_QUOTES, 'UTF-8') . "</td>";
+                                    echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['jam'], ENT_QUOTES, 'UTF-8') . "</td>";
+                                    echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['tempat'], ENT_QUOTES, 'UTF-8') . "</td>";
+                                    echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['kegiatan'], ENT_QUOTES, 'UTF-8') . "</td>";
+                                    echo "<td class='py-4 px-6 text-center'>" . htmlspecialchars($row['pic'], ENT_QUOTES, 'UTF-8') . "</td>";
                                     echo "<td class='py-4 px-6 text-center'>
-                                            <a href='#' class='text-blue-500 hover:underline' onclick='editAgenda(" . $row['id'] . ", \"" . htmlspecialchars($row['judul']) . "\", \"" . htmlspecialchars($row['tanggal']) . "\", \"" . htmlspecialchars($row['jam']) . "\", \"" . htmlspecialchars($row['tempat']) . "\", \"" . htmlspecialchars($row['kegiatan']) . "\")'>Edit</a> |
+                                            <a href='#' class='text-blue-500 hover:underline' onclick='editAgenda(" . $row['id'] . ", \"" . htmlspecialchars($row['judul'], ENT_QUOTES, 'UTF-8') . "\", \"" . htmlspecialchars($row['tanggal'], ENT_QUOTES, 'UTF-8') . "\", \"" . htmlspecialchars($row['jam'], ENT_QUOTES, 'UTF-8') . "\", \"" . htmlspecialchars($row['tempat'], ENT_QUOTES, 'UTF-8') . "\", \"" . htmlspecialchars($row['kegiatan'], ENT_QUOTES, 'UTF-8') . "\", \"" . htmlspecialchars($row['pic'], ENT_QUOTES, 'UTF-8') . "\")'>Edit</a> |
                                             <a href='?delete_id=" . $row['id'] . "' class='text-red-500 hover:underline'>Delete</a>
                                           </td>";
                                     echo "</tr>";
                                     $no++;
                                 }
                             } else {
-                                echo "<tr><td colspan='7' class='py-4 px-6 text-center'>No data available</td></tr>";
+                                echo "<tr><td colspan='8' class='py-4 px-6 text-center'>No data available</td></tr>";
                             }
                             ?>
                         </tbody>
@@ -238,7 +243,7 @@ $result_agendas = $conn->query($sql_agendas);
             <!-- Public URL Section -->
             <div class="bg-gray-800 shadow-lg rounded-lg p-6 transition-transform duration-300">
                 <h3 class="text-2xl font-bold text-white mb-4">Public URL</h3>
-                <p class="text-blue-500 hover:underline"><a href="result.php?id=<?php echo htmlspecialchars($public_url); ?>" target="_blank">result.php?id=<?php echo htmlspecialchars($public_url); ?></a></p>
+                <p class="text-blue-500 hover:underline"><a href="result.php?id=<?php echo htmlspecialchars($public_url ?? '', ENT_QUOTES, 'UTF-8'); ?>" target="_blank">result.php?id=<?php echo htmlspecialchars($public_url ?? '', ENT_QUOTES, 'UTF-8'); ?></a></p>
             </div>
             <!-- Buat Agenda Baru -->
             <div class="bg-gray-800 shadow-lg rounded-lg p-6 transition-transform duration-300 mt-10">
@@ -266,6 +271,10 @@ $result_agendas = $conn->query($sql_agendas);
                     <div>
                         <label for="kegiatan" class="block text-sm font-medium text-gray-300">Kegiatan</label>
                         <textarea id="kegiatan" name="kegiatan" rows="4" class="mt-1 p-2 bg-gray-700 text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-600"></textarea>
+                    </div>
+                    <div>
+                        <label for="pic" class="block text-sm font-medium text-gray-300">PIC</label>
+                        <textarea id="pic" name="pic" rows="4" class="mt-1 p-2 bg-gray-700 text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-600"></textarea>
                     </div>
                     <div class="mt-6">
                         <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-full font-bold shadow-md hover:bg-blue-700 transition duration-300">Save</button>
@@ -297,6 +306,10 @@ $result_agendas = $conn->query($sql_agendas);
                     <div>
                         <label for="tempat_modal" class="block text-sm font-medium text-gray-300">Tempat</label>
                         <input type="text" id="tempat_modal" name="tempat" class="mt-1 p-2 bg-gray-700 text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-600">
+                    </div>
+                    <div>
+                        <label for="pic_modal" class="block text-sm font-medium text-gray-300">PIC</label>
+                        <input type="text" id="pic_modal" name="pic" class="mt-1 p-2 bg-gray-700 text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-600">
                     </div>
                 </div>
                 <div>
